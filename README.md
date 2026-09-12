@@ -1,4 +1,4 @@
-# 🧩 NeoMLoader for Arizona/Rodina Mobile [![Download Latest Release](https://img.shields.io/github/v/release/MTGMODS/arz_monetloader?label=Download%20Latest%20APK&style=for-the-badge&color=success)](https://github.com/MTGMODS/arz_monetloader/releases/latest)
+# 🧩 NeoMLoader for Arizona/Rodina Mobile [![Download Latest Release](https://img.shields.io/github/v/release/MTGMODS/arz_lua_launcher?label=Download%20Latest%20APK&style=for-the-badge&color=success)](https://github.com/MTGMODS/arz_lua_launcher/releases/latest)
 
 <!-- <img width="900" height="400" alt="Logo" src="https://github.com/user-attachments/assets/8c570cb3-ed3f-4c39-8b14-9ecb3ab4ed83" /> -->
 
@@ -25,7 +25,7 @@ If you only want to play, you don't need to build the project yourself.
 
 Our automated CI/CD pipeline builds the latest version every time the game updates.
 
-1. Go to the [Releases page](https://github.com/MTGMODS/arz_monetloader/releases/latest).
+1. Go to the [Releases page](https://github.com/MTGMODS/arz_lua_launcher/releases/latest).
 2. Download the latest `arizona` or `rodina` apk.
 3. Install the APK on your Android device and grant the necessary permissions.
 4. Use the `/mtg` command in-game to manage your scripts!
@@ -95,8 +95,8 @@ If you want to compile the project yourself:
 
 1. **Clone** this repository to your local machine:
 ```bash
-git clone https://github.com/MTGMODS/arz_monetloader.git
-cd arz_monetloader
+git clone https://github.com/MTGMODS/arz_lua_launcher.git
+cd arz_lua_launcher
 ```
 2. Install **Python** dependencies:
 ```bash
