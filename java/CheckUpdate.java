@@ -22,7 +22,7 @@ public class CheckUpdate {
     public static boolean isNeedUpdate(Activity activity, Context context) {
 
         try {
-            URL url = new URL("https://raw.githubusercontent.com/MTGMODS/arz_monetloader/refs/heads/main/launcher.json");
+            URL url = new URL("https://raw.githubusercontent.com/MTGMODS/arz_lua_launcher/refs/heads/main/launcher_new.json");
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -47,7 +47,7 @@ public class CheckUpdate {
 
             if (!appVersion.equals(currentVersion)) {
                 activity.runOnUiThread(() -> new AlertDialog.Builder(context)
-                        .setTitle("ℹ️ MonetLoader Update ℹ️")
+                        .setTitle("ℹ️ NeoMLoader Update ℹ️")
                         .setMessage("Установленный у вас лаунчер версии " + appVersion + " не актуален!\n\nИспользуйте версию " + currentVersion + " для стабильной игры с Lua")
                         .setPositiveButton("Скачать " + currentVersion, (dialogInterface, i) -> {
                             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(updateUrl));
