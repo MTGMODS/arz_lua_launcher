@@ -22,7 +22,7 @@ public class CheckUpdate {
     public static boolean isNeedUpdate(Activity activity, Context context) {
 
         try {
-            URL url = new URL("https://raw.githubusercontent.com/MTGMODS/arz_monetloader/refs/heads/main/launcher.json");
+            URL url = new URL("https://raw.githubusercontent.com/MTGMODS/arz_lua_launcher/refs/heads/main/launcher.json");
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
