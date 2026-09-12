@@ -1,6 +1,6 @@
 # 🧩 NeoMLoader for Arizona/Rodina Mobile [![Download Latest Release](https://img.shields.io/github/v/release/MTGMODS/arz_lua_launcher?label=Download%20Latest%20APK&style=for-the-badge&color=success)](https://github.com/MTGMODS/arz_lua_launcher/releases/latest)
 
-<!-- <img width="900" height="400" alt="Logo" src="https://github.com/user-attachments/assets/8c570cb3-ed3f-4c39-8b14-9ecb3ab4ed83" /> -->
+<img width="900" height="400" alt="Logo" src="https://github.com/user-attachments/assets/e9e33c68-1e3f-4d88-9338-00ef7613d416" />
 
 An **external automation tool** (patcher) that adds **Lua scripting support** to the **[Arizona/Rodina](https://arzgame.online/)** client through the external **[NeoMLoader](https://t.me/neomloader)** library.
 
