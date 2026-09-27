@@ -230,7 +230,7 @@ imgui.OnInitialize(function()
     imgui.GetStyle().Colors[imgui.Col.TitleBgCollapsed]       = imgui.ImVec4(0.12, 0.12, 0.12, 1.00)
     imgui.GetStyle().Colors[imgui.Col.MenuBarBg]              = imgui.ImVec4(0.12, 0.12, 0.12, 1.00)
     imgui.GetStyle().Colors[imgui.Col.ScrollbarBg]            = imgui.ImVec4(0.12, 0.12, 0.12, 1.00)
-    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrab]          = imgui.ImVec4(0.00, 0.00, 0.00, 1.00)
+    imgui.GetStyle().Colors[imgui.Col.ScrollbarGrab]          = imgui.ImVec4(0.35, 0.35, 0.35, 1.00)
     imgui.GetStyle().Colors[imgui.Col.ScrollbarGrabHovered]   = imgui.ImVec4(0.41, 0.41, 0.41, 1.00)
     imgui.GetStyle().Colors[imgui.Col.ScrollbarGrabActive]    = imgui.ImVec4(0.51, 0.51, 0.51, 1.00)
     imgui.GetStyle().Colors[imgui.Col.CheckMark]              = imgui.ImVec4(1.00, 1.00, 1.00, 1.00)
@@ -268,9 +268,11 @@ end)
 imgui.OnFrame(
     function() return MainWindow[0] end,
     function(player)
+		local curSizeX, curSizeY = getScreenResolution()
+		local childHeight = math.min((42 + 38 * #support_scripts) * MONET_DPI_SCALE, curSizeY * 0.75)
+		imgui.SetNextWindowPos(imgui.ImVec2(curSizeX / 2, curSizeY / 2), imgui.Cond.FirstUseEver, imgui.ImVec2(0.5, 0.5))
 		imgui.Begin(fa.GEAR .." MTG Installer " .. fa.GEAR, MainWindow, imgui.WindowFlags.NoCollapse + imgui.WindowFlags.NoResize + imgui.WindowFlags.AlwaysAutoResize)
-		imgui.SetNextWindowPos(imgui.ImVec2(sizeX / 2, sizeY / 2), imgui.Cond.FirstUseEver, imgui.ImVec2(0.5, 0.5))
-		if imgui.BeginChild('##1', imgui.ImVec2(660 * MONET_DPI_SCALE, (36*#support_scripts) * MONET_DPI_SCALE), true) then
+		if imgui.BeginChild('##1', imgui.ImVec2(670 * MONET_DPI_SCALE, childHeight), true) then
 			imgui.Columns(3)
 			imgui.CenterColumnText(u8"Название и версия")
 			imgui.SetColumnWidth(-1, 200 * MONET_DPI_SCALE)
