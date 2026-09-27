@@ -592,7 +592,7 @@ local DEFAULT_CONFIG = { -- default config
   lastCrashesCount = 10, -- count of saved crashed scripts
   shellHistoryCount = 50, -- count of saved shell history
   currentLang = "ru",
-  skipSuggestion = false
+  skipSuggestion = true
 }
 
 local config = cfg.load(DEFAULT_CONFIG) -- simply config
