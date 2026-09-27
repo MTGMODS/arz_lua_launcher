@@ -330,20 +330,27 @@ for i, line in enumerate(smali_lines):
         check_inject = True
         break
 
+if not check_inject: # FallBack
+    for i, line in enumerate(smali_lines):
+        if " onCreate(" in line:
+            for j in range(i, len(smali_lines)):
+                if "return-void" in smali_lines[j]:
+                    smali_lines.insert(j, '    invoke-static {p0, p0}, Lcom/arizona/launcher/MtgTools;->initialize(Landroid/app/Activity;Landroid/content/Context;)V\n\n')
+                    check_inject = True
+                    break
+            break
+
 if not check_inject:
     raise RuntimeError("❌ Failed to inject MTGTools.")
 
 version_pattern = re.compile(r'const-string v\d+, " v(\d+\.\d+\.\d+)')
-version_app = ""
+version_app = "lua"
 
 for line in smali_lines:
     match_version = version_pattern.search(line)
     if match_version:
         version_app = "v" + match_version.group(1)
         break
-
-if not version_app:
-    raise RuntimeError("❌ Version not found!")
 
 with open(MAIN_ENTRENCH_PATH, "w", encoding="utf-8") as file:
     file.writelines(smali_lines)
