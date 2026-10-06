@@ -53,25 +53,6 @@ if os.path.exists(LIB_PATH):
 
 ##################################################################################################################
 
-print("[INFO] 🔧 Temporally delete bad function SetFrameLimit...")
-
-SET_FRAME_LIMIT_PATH = DECODED_DIR + "/smali_classes3/com/arizona/game/core/JNIGLSurfaceView.smali"
-
-if os.path.exists(SET_FRAME_LIMIT_PATH):
-    with open(SET_FRAME_LIMIT_PATH, "r", encoding="utf-8") as file:
-        smali_lines = file.readlines()
-
-    for i, line in enumerate(smali_lines):
-        if "invoke-static {v0}, Lcom/arizona/game/natives;->SetFrameLimit(I)V" in line:
-            smali_lines[i] = "    # " + smali_lines[i]
-            print("[INFO] ✅ Bad SetFrameLimit action commented successfully!")
-            break
-
-    with open(SET_FRAME_LIMIT_PATH, "w", encoding="utf-8") as file:
-        file.writelines(smali_lines)
-
-##################################################################################################################
-
 SRC_FILES = PATH + "/files"
 
 print("[INFO] 🔧 Adding \"files\" to original client...")
