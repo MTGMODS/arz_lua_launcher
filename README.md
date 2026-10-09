@@ -1,4 +1,4 @@
-# 🧩 NeoMLoader for Arizona/Rodina Mobile [![Download Latest Release](https://img.shields.io/github/v/release/MTGMODS/arz_lua_launcher?label=Download%20Latest%20APK&style=for-the-badge&color=success)](https://github.com/MTGMODS/arz_lua_launcher/releases/latest)
+# 🧩 NeoMLoader [Arizona/Rodina] [![Download Latest Release](https://img.shields.io/github/v/release/MTGMODS/arz_lua_launcher?label=Download%20Latest%20APK&style=for-the-badge&color=success)](https://github.com/MTGMODS/arz_lua_launcher/releases/latest)
 
 <img width="900" height="400" alt="Logo" src="https://github.com/user-attachments/assets/e9e33c68-1e3f-4d88-9338-00ef7613d416" />
 
@@ -28,7 +28,7 @@ Our automated CI/CD pipeline builds the latest version every time the game updat
 1. Go to the [Releases page](https://github.com/MTGMODS/arz_lua_launcher/releases/latest).
 2. Download the latest `arizona` or `rodina` apk.
 3. Install the APK on your Android device and grant the necessary permissions.
-4. Use the `/mtg` command in-game to manage your scripts!
+4. Use the `/mtg` or `/store` command in-game to manage your scripts!
 
 ---
 
