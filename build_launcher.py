@@ -456,7 +456,7 @@ if version_app != "lua":
     launcher_json[version_key] = version_app
 
     with open(LAUNCHER_JSON_PATH, "w", encoding="utf-8") as file:
-        json.dump(launcher_json, file, indent=4)
+        json.dump(launcher_json, file, indent=2)
 
     print(f"[INFO] ✅ Config launcher.json updated: {version_key} = {version_app}")
     
