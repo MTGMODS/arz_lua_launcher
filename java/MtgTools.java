@@ -151,7 +151,7 @@ public class MtgTools {
                     break;
             }
         } else {
-            message = "⚠️ Некорректный ответ: " + code;
+            message = "⚠️ Ошибка: HTTP " + code;
         }
 
         final String toastMessage = "[MTG MODS]\n" + message;
