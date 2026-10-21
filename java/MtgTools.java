@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Gravity;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -45,8 +46,9 @@ public class MtgTools {
         );
     }
 
-    private static String postRequest(String urlStr, String key, String device) {
+    private static Pair<Integer, String> postRequest(String urlStr, String key, String device) throws Exception {
         HttpsURLConnection c = null;
+
         try {
             c = (HttpsURLConnection) new URL(urlStr).openConnection();
             c.setRequestMethod("POST");
@@ -54,10 +56,12 @@ public class MtgTools {
             c.setReadTimeout(5000);
             c.setDoOutput(true);
 
-            String json = String.format("{\"key\":\"%s\",\"device\":\"%s\"}", key, device != null ? device : "");
-            byte[] out = json.getBytes(StandardCharsets.UTF_8);
+            JSONObject json = new JSONObject();
+            json.put("key", key != null ? key : "");
+            json.put("device", device != null ? device : "");
+            byte[] out = json.toString().getBytes(StandardCharsets.UTF_8);
 
-            c.setRequestProperty("Content-Type", "application/json");
+            c.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             c.setFixedLengthStreamingMode(out.length);
 
             try (OutputStream os = c.getOutputStream()) {
@@ -67,85 +71,93 @@ public class MtgTools {
             int code = c.getResponseCode();
             Log.i("MtgTools", "HTTP code: " + code + " from " + urlStr);
 
-            InputStream is = (code >= 400) ? c.getErrorStream() : c.getInputStream();
-            if (is == null) return null;
-
+            InputStream is = code >= 400 ? c.getErrorStream() : c.getInputStream();
             StringBuilder sb = new StringBuilder();
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(is))) {
-                String line;
-                while ((line = in.readLine()) != null) sb.append(line);
+
+            if (is != null) {
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = in.readLine()) != null) {
+                        sb.append(line);
+                    }
+                }
             }
 
-            String body = sb.toString();
-            if (body.isEmpty()) return null;
-
-            return body;
-        } catch (UnknownHostException e) {
-            Log.e("MtgTools", "DNS error: " + e.getMessage());
-            return null;
-        } catch (Exception e) {
-            Log.e("MtgTools", "Error post request: ", e);
-            return null;
+            return new Pair<>(code, sb.toString());
         } finally {
             if (c != null) c.disconnect();
         }
     }
 
     public static boolean isValidKey(String key, Context context) {
-        Log.i("MtgTools", "Check key: " + key);
-
-        String response = postRequest("https://api.mtgmods.com/v1/license/check", key, getDeviceId(context));
-        if (response == null) {
-            new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(context, "[MTG MODS]\n⚠️ Ошибка подключения ⚠️", Toast.LENGTH_LONG).show());
-            return false;
-        }
+        Handler handler = new Handler(Looper.getMainLooper());
+        Pair<Integer, String> response;
 
         try {
-            JSONObject json = new JSONObject(response);
-            Boolean valid = json.has("valid") ? json.getBoolean("valid") : null;
-            if (Boolean.TRUE.equals(valid)) {
-                String username = json.optString("user", "VIP пользователь");
-                new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(context, "[MTG MODS]\n👑 " + username + " 👑", Toast.LENGTH_SHORT).show());
-                return true;
-            } else if (Boolean.FALSE.equals(valid)) {
-                String err = json.optString("error", "");
-                String toastMessage;
-                if (json.optBoolean("expires", false)) {
-                    toastMessage = "[MTG MODS]\n😭 Ключ устарел 😭";
-                    context.getSharedPreferences("mtg", Context.MODE_PRIVATE).edit().remove("key").apply();
-                } else if ("Key not found".equalsIgnoreCase(err)) {
-                    toastMessage = "[MTG MODS]\n❌ Ключ не найден ❌";
-                    context.getSharedPreferences("mtg", Context.MODE_PRIVATE).edit().remove("key").apply();
-                } else if ("Missing key".equalsIgnoreCase(err)) {
-                    toastMessage = "[MTG MODS]\n⚠️ Не введён ключ ⚠️";
-                    context.getSharedPreferences("mtg", Context.MODE_PRIVATE).edit().remove("key").apply();
-                } else if ("Internal server error".equalsIgnoreCase(err)) {
-                    toastMessage = "[MTG MODS]\n❗️ Сервер упал ❗️";
-                } else if ("NOT_ACTIVATED".equalsIgnoreCase(err)) {
-                    toastMessage = "[MTG MODS]\n👉 Активируйте в TG/DS 👈";
-                } else if ("RATE_LIMIT".equalsIgnoreCase(err)) {
-                    int retry = json.optInt("retry", 10);
-                    toastMessage = "[MTG MODS]\n⏳ АнтиФлуд " + retry + " сек ⏳";
-                } else {
-                    toastMessage = "[MTG MODS]\n⚠️ Ошибка сервера ⚠️";
-                    Log.e("MtgTools", "Unexpected valid=false response: " + response);
-                    String finalResponse = response;
-                    new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(context, finalResponse, Toast.LENGTH_LONG).show());
-                }
-                new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show());
-            } else {
-                Log.e("MtgTools", "Error check key: " + response);
-                new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(context, "🌐 Смените 4G / Wi-Fi / VPN 🌐", Toast.LENGTH_SHORT).show());
-                String finalResponse = response;
-                new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(context, finalResponse, Toast.LENGTH_LONG).show());
-            };
-            return false;
+            response = postRequest("https://api.mtgmods.com/v1/license/check", key, getDeviceId(context));
         } catch (Exception e) {
-            Log.e("MtgTools", "Error check key: ", e);
-            new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show());
+            Log.e("MtgTools", "License connection failed", e);
+            String message = "[MTG MODS]\n🌐 Смените Wi-Fi/LTE или VPN 🌐";
+            handler.post(() -> Toast.makeText(context, message, Toast.LENGTH_LONG).show());
+            return false;
         }
+
+        int code = response.first;
+        JSONObject json;
+
+        try {
+            json = new JSONObject(response.second);
+        } catch (org.json.JSONException e) {
+            json = new JSONObject();
+        }
+
+        if (code == 200 && Boolean.TRUE.equals(json.opt("valid"))) {
+            String username = json.optString("user", "MTGVIP");
+            handler.post(() -> Toast.makeText(context, "[MTG MODS]\n👑 " + username + " 👑", Toast.LENGTH_SHORT).show());
+            return true;
+        }
+
+        String errorCode = json.optString("error_code", "");
+        String message;
+
+        if (code == 404) {
+            if ("LICENSE_NOT_FOUND".equals(errorCode)) {
+                message = "❌ Ключ не найден ❌";
+            } else {
+                message = "❗️ Сервер недоступен ❗️";
+            }
+        } else if (code >= 500) {
+            message = "❗️ Cервер упал:  " + code + " ❗️";
+        } else if (code == 429) {
+            message = "⏳ Слишком много запросов";
+        } else if (code == 422) {
+            message = "⚠️ Ваши данные некорректные";
+        } else if (code == 403) {
+            switch (errorCode) {
+                case "LICENSE_BANNED":
+                    message = "🚫 Ключ заблокирован 🚫";
+                    break;
+                case "LICENSE_EXPIRED":
+                    message = "⌛ Срок подписки истёк ⌛";
+                    break;
+                case "LICENSE_NOT_ACTIVATED":
+                    message = "👉 Активируйте ключ в кабинете";
+                    break;
+                case "HWID_LIMIT_REACHED":
+                    message = "📱 Достигнут лимит устройств 📱";
+                    break;
+                default:
+                    message = "⚠️ HTTP 403 ⚠️";
+                    break;
+            }
+        } else {
+            message = "⚠️ Некорректный ответ: " + code;
+        }
+
+        final String toastMessage = "[MTG MODS]\n" + message;
+        handler.post(() -> Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show());
         return false;
-    };
+    }
 
     public static boolean isActiveAdBlocker(Activity activity, Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -195,6 +207,7 @@ public class MtgTools {
         }
         return false;
     }
+
     public static boolean isShowAd(Context context) {
         SharedPreferences sp = context.getSharedPreferences("mtg", Context.MODE_PRIVATE);
         if (!sp.getBoolean("check", false)) {
@@ -207,10 +220,10 @@ public class MtgTools {
 
     public static void showVipDialog(Activity activity, Context context) {
         final EditText input = new EditText(context);
-        input.setHint("Укажите ключ, который вы получили из бота");
+        input.setHint("Укажите ключ MTGVIP, который вы приобрели");
         input.setGravity(Gravity.CENTER);
         new AlertDialog.Builder(context)
-                .setMessage("Узнать подробней про бонусы и цену VIP, либо приобрести VIP вы можете в Telegram/Discord MTG MODS, например https://t.me/mtgmods/60\n\nЕсли у вас и так уже есть купленный VIP, то введите данные ниже")
+                .setMessage("Узнать про MTGVIP можно на сайте https://mtgmods.com/vip\n\nЕсли вы уже купили MTGVIP, то введите ваш ключ ниже")
                 .setView(input)
                 .setPositiveButton("Проверить ключ", (dialog2, which) -> {
                     String key = input.getText().toString().trim();
