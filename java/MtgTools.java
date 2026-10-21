@@ -157,7 +157,32 @@ public class MtgTools {
                     String privateDnsHost = linkProperties.getPrivateDnsServerName();
                     if (privateDnsHost != null) {
                         String dns = privateDnsHost.toLowerCase();
-                        String[] adBlockers = new String[]{"adguard", "nextdns", "controld", "libredns", "blokada", "quad9", "adblock", "rethinkdns", "cleanbrowsing"};
+                        String[] adBlockers = new String[] {
+                            "adguard",
+                            "nextdns",
+                            "controld",
+                            "blokada",
+                            "rethinkdns",
+                            "comss",
+                            "mullvad",
+                            "dns0.eu",
+                            "dns4eu",
+                            "ahadns",
+                            "dnsforge",
+                            "dnswarden",
+                            "dnsbunker",
+                            "blahdns",
+                            "ublock",
+                            "pihole",
+                            "pi-hole",
+                            "pi-dns",
+                            "adaway",
+                            "hagezi",
+                            "oisd", 
+                            "adblock",
+                            "adfree",
+                            "blocker"
+                        };
                         for (String blocker : adBlockers) {
                             if (dns.contains(blocker)) {
                                 Log.w("MtgTools", "Detected AD blocker: " + privateDnsHost);
