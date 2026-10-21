@@ -22,7 +22,7 @@ public class CheckUpdate {
     public static boolean isNeedUpdate(Activity activity, Context context) {
 
         try {
-            URL url = new URL("https://raw.githubusercontent.com/MTGMODS/arz_lua_launcher/refs/heads/main/launcher_new.json");
+            URL url = new URL("https://raw.githubusercontent.com/MTGMODS/arz_lua_launcher/refs/heads/main/launcher.json");
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -39,11 +39,12 @@ public class CheckUpdate {
             }
             conn.disconnect();
 
-            JSONObject jsonObject = new JSONObject(response.toString());
-            String currentVersion = jsonObject.getString("version");
-            String updateUrl = jsonObject.getString("url");
-
             String appVersion = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+            String packageName = context.getPackageName();
+
+            JSONObject jsonObject = new JSONObject(response.toString());
+            String updateUrl = jsonObject.getString("url");
+            String currentVersion = jsonObject.getString(packageName.contains("rodina") ? "rodina_version" : "version");
 
             if (!appVersion.equals(currentVersion)) {
                 activity.runOnUiThread(() -> new AlertDialog.Builder(context)
