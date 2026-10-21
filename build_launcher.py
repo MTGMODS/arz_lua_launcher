@@ -45,7 +45,7 @@ print("[INFO] ✅ APK decompiled successfully!")
 
 APKTOOL_YML_PATH = DECODED_DIR + "/apktool.yml"
 
-print("[INFO] 📦 Getting apo version...")
+print("[INFO] 📦 Getting app version...")
 
 with open(APKTOOL_YML_PATH, "r", encoding="utf-8") as file:
     apktool_yml = file.read()
@@ -458,7 +458,7 @@ if version_app != "lua":
     with open(LAUNCHER_JSON_PATH, "w", encoding="utf-8") as file:
         json.dump(launcher_json, file, indent=4)
 
-    print(f"[INFO] ✅ launcher.json updated: {version_key} = {version_app}")
+    print(f"[INFO] ✅ Config launcher.json updated: {version_key} = {version_app}")
     
 ##################################################################################################################
 
