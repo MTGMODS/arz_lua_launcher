@@ -41,6 +41,24 @@ print("[INFO] ⚙️ Decompiling APK...")
 subprocess.run(["java", "-jar", APKTOOL_PATH, "d", APK_PATH, "-o", DECODED_DIR, "--force"], check=True)
 print("[INFO] ✅ APK decompiled successfully!")
 
+#################################################################################################################
+
+APKTOOL_YML_PATH = DECODED_DIR + "/apktool.yml"
+
+print("[INFO] 📦 Getting apo version...")
+
+with open(APKTOOL_YML_PATH, "r", encoding="utf-8") as file:
+    apktool_yml = file.read()
+
+match = re.search(r"^\s*versionName:\s*['\"]?([^'\"\r\n]+)", apktool_yml, re.MULTILINE)
+
+if match:
+    version_app = match.group(1).strip()
+else:
+    version_app = "lua"
+
+print(f"[INFO] ℹ️ App version: {version_app}")
+
 ##################################################################################################################
 
 LIB_PATH = DECODED_DIR + "/lib/armeabi-v7a"
@@ -342,15 +360,6 @@ if not check_inject: # FallBack
 
 if not check_inject:
     raise RuntimeError("❌ Failed to inject MTGTools.")
-
-version_pattern = re.compile(r'const-string v\d+, " v(\d+\.\d+\.\d+)')
-version_app = "lua"
-
-for line in smali_lines:
-    match_version = version_pattern.search(line)
-    if match_version:
-        version_app = "v" + match_version.group(1)
-        break
 
 with open(MAIN_ENTRENCH_PATH, "w", encoding="utf-8") as file:
     file.writelines(smali_lines)
