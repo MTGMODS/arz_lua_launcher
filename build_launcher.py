@@ -439,6 +439,26 @@ else:
     print(f"[INFO] ➡️ Signing skipped (no keystore or env vars found)")
     shutil.move(UNSIGNED_APK, SIGNED_APK)
     print(f"[INFO] ℹ️ Your no_signed launcher {version_app}: {SIGNED_APK}")
+
+#################################################################################################################
+
+if version_app != "lua":
+
+    LAUNCHER_JSON_PATH = PATH + "/launcher.json"
+
+    print("[INFO] 📝 Updating launcher.json version...")
+
+    with open(LAUNCHER_JSON_PATH, "r", encoding="utf-8") as file:
+        launcher_json = json.load(file)
+
+    version_key = "version" if sys.argv[1] == "arizona" else "rodina_version"
+
+    launcher_json[version_key] = version_app
+
+    with open(LAUNCHER_JSON_PATH, "w", encoding="utf-8") as file:
+        json.dump(launcher_json, file, indent=4)
+
+    print(f"[INFO] ✅ launcher.json updated: {version_key} = {version_app}")
     
 ##################################################################################################################
 
