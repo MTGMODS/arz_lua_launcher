@@ -100,35 +100,73 @@ function downloadToFile(url, path, callback, progressInterval)
 	end)
 end
 
+local MIN_HELPER_SIZE = 600 * 1024 -- 100 KB
+
+function isHelperInstalled()
+    local file = io.open(helper_path, "rb")
+    if not file then return false end
+
+    local size = file:seek("end")
+    file:close()
+
+    return size and size >= MIN_HELPER_SIZE
+end
+
 function main()
 
     if not isSampLoaded() or not isSampfuncsLoaded() then return end
     while not isSampAvailable() do wait(0) end
 	repeat wait(0) until sampIsLocalPlayerSpawned()
 
-	if not doesFileExist(helper_path) then
+	if not isHelperInstalled() then
 		msg('Используйте команду {00ccff}/mtg {ffffff}для авто-установки {00ccff}Arizona&Rodina Helper')
 	end
 
-    sampRegisterChatCommand('mtg', function ()
-		if doesFileExist(helper_path) then
+    local downloading = false
+
+	sampRegisterChatCommand('mtg', function()
+		if downloading then
+			msg('Скачивание уже выполняется, ожидайте...')
+			return
+		end
+
+		if isHelperInstalled() then
 			msg('У вас уже установлен хелпер, открываю его главное меню...')
 			sampProcessChatInput('/helper')
-		else
-			msg('Начинаю скачивание хелпера, ожидайте...')
-			downloadToFile(helper_url, helper_path, function(type, pos, total_size)
-				if type == "finished" then
-					lua_thread.create(function ()
-						msg('Скачивание хелпера успешно завершено! Перезапуск скриптов...')
-						wait(500)
-						reloadScripts()
-					end)
-				elseif type == "error" then
-					msg('Ошибка скачивания хелпера: ' .. pos)
-					msg('Возможно вам поможет VPN или другой интернет.')
-				end
-			end)
+			return
 		end
+
+		if doesFileExist(helper_path) then
+			os.remove(helper_path)
+		end
+
+		downloading = true
+		msg('Начинаю скачивание хелпера, ожидайте...')
+
+		downloadToFile(helper_url, helper_path, function(type, pos, total_size)
+			if type == "finished" then
+				downloading = false
+
+				if not isHelperInstalled() then
+					os.remove(helper_path)
+					msg('Ошибка: скачанный файл слишком маленький или повреждён.')
+					return
+				end
+
+				lua_thread.create(function()
+					msg('Скачивание хелпера успешно завершено! Перезапуск скриптов...')
+					wait(100)
+					reloadScripts()
+				end)
+
+			elseif type == "error" then
+				downloading = false
+				os.remove(helper_path)
+
+				msg('Ошибка скачивания хелпера: ' .. tostring(pos))
+				msg('Возможно вам поможет VPN или другой интернет.')
+			end
+		end)
 	end)
 
     wait(-1)
