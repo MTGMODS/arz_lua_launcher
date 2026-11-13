@@ -192,7 +192,8 @@ public class MtgTools {
                             "adblock",
                             "adfree",
                             "anti-ad",
-                            "blocker"
+                            "blocker",
+                            "bezmezhau"
                         };
                         for (String blocker : adBlockers) {
                             if (dns.contains(blocker)) {
