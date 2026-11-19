@@ -71,6 +71,9 @@ if os.path.exists(LIB_PATH):
 
 ##################################################################################################################
 
+print("[INFO] Building Android screenshot module...")
+subprocess.run([sys.executable, os.path.join(PATH, "tools", "build_screenshot.py")], check=True)
+
 SRC_FILES = PATH + "/files"
 
 print("[INFO] 🔧 Adding \"files\" to original client...")
@@ -294,6 +297,14 @@ print("[INFO] 📢 Adding Unity Ads activities to AndroidManifest.xml...")
 
 with open(MANIFEST_PATH, "r", encoding="utf-8") as file:
     manifest_data = file.read()
+
+# Android 7-9 need a declared runtime permission for public Gallery files.
+if 'android.permission.WRITE_EXTERNAL_STORAGE' not in manifest_data:
+    manifest_data = manifest_data.replace(
+        '<application',
+        '<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28"/>\n<application',
+        1
+    )
 
 new_activities = '''
 <activity android:name="com.unity3d.services.ads.adunit.AdUnitActivity" android:configChanges="fontScale|keyboard|keyboardHidden|locale|mnc|mcc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|uiMode|touchscreen" android:hardwareAccelerated="true" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
