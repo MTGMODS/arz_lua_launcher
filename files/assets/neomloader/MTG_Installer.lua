@@ -100,7 +100,7 @@ function downloadToFile(url, path, callback, progressInterval)
 	end)
 end
 
-local MIN_HELPER_SIZE = 600 * 1024 -- 100 KB
+local MIN_HELPER_SIZE = 600 * 1024
 
 function isHelperInstalled()
     local file = io.open(helper_path, "rb")
